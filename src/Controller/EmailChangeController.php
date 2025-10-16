@@ -24,6 +24,7 @@ class EmailChangeController extends AbstractController
         if (!$securityUser instanceof UserInterface) {
             return new JsonResponse(['message' => 'User not authenticated'], JsonResponse::HTTP_UNAUTHORIZED);
         }
+        echo("finptit");
 
         // Fetch a managed instance of the user from the database to ensure changes are persisted.
         $user = $entityManager->getRepository(Utilisateur::class)->find($securityUser->getId());
@@ -55,7 +56,7 @@ class EmailChangeController extends AbstractController
 
         $confirmationLink = $this->generateUrl('app_confirm_email_change', ['token' => $token], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $emailBody = '<body style="font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f4f4f4;">\n'
+        $emailBody = '<body style="font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f4f4f4;">'
         . '    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
 '
         . '        <h1 style="color: #333; text-align: center; font-size: 24px;">Confirmez votre nouvelle adresse e-mail</h1>
