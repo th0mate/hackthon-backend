@@ -16,6 +16,24 @@ class CarteRepository extends ServiceEntityRepository
         parent::__construct($registry, Carte::class);
     }
 
+    public function findPreviousMoodOnSameDay(\App\Entity\Utilisateur $user, \DateTimeImmutable $date): ?Carte
+    {
+        $startOfDay = $date->setTime(0, 0, 0);
+        $endOfDay = $date->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.utilisateur = :user')
+            ->andWhere('c.beginAt >= :start')
+            ->andWhere('c.beginAt <= :end')
+            ->setParameter('user', $user)
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
+            ->orderBy('c.beginAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Carte[] Returns an array of Carte objects
     //     */

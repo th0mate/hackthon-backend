@@ -18,7 +18,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'mood:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -38,11 +38,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'mood:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'mood:read'])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -141,7 +141,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
     }
 
     public function getNom(): ?string
@@ -213,7 +212,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCarte(Carte $carte): static
     {
         if ($this->cartes->removeElement($carte)) {
-            // set the owning side to null (unless already changed)
             if ($carte->getUtilisateur() === $this) {
                 $carte->setUtilisateur(null);
             }
