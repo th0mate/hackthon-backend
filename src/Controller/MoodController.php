@@ -41,8 +41,8 @@ class MoodController extends AbstractController
             'totalEntries' => $totalEntries,
             'moodDistribution' => $moodDistribution,
             'mostFrequentMood' => $mostFrequentMood,
-            'averageMood' => null, // a implementer
-            'weekTrend' => 'stable', // a implementer
+            'averageMood' => null,
+            'weekTrend' => 'stable',
         ];
 
         return $this->json($stats);

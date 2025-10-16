@@ -9,6 +9,18 @@ use App\Entity\User;
 
 class SecurityController extends AbstractController
 {
+    #[Route('/api/me', name: 'api_me', methods: ['GET'])]
+    public function me(): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['message' => 'User not found'], 404);
+        }
+
+        return $this->json(['user' => $user], 200, [], ['groups' => 'user:read']);
+    }
+
     #[Route('/api/auth/login', name: 'api_login', methods: ['POST'])]
     public function login(): JsonResponse
     {
@@ -16,4 +28,6 @@ class SecurityController extends AbstractController
             'message' => 'This should not be reached!'
         ], 401);
     }
+
+
 }
