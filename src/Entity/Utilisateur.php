@@ -30,6 +30,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private ?string $adresseMail = null;
 
+    #[ORM\Column(type: Types::BOOLEAN, options: ["default" => false])]
+    private bool $isVerified = false;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $verificationToken = null;
+
     /**
      * @var list<string> The user roles
      */
@@ -81,7 +87,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->adresseMail;
     }
 
-    public function setAdresseMail(string $adresseMail): static
+    public function setAdresseMail(?string $adresseMail): static
     {
         $this->adresseMail = $adresseMail;
 
@@ -188,26 +194,26 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getNonce(): ?string
+    public function isVerified(): bool
     {
-        return $this->nonce;
+        return $this->isVerified;
     }
 
-    public function setNonce(?string $nonce): static
+    public function setVerified(bool $isVerified): static
     {
-        $this->nonce = $nonce;
+        $this->isVerified = $isVerified;
 
         return $this;
     }
 
-    public function getPendingEmail(): ?string
+    public function getVerificationToken(): ?string
     {
-        return $this->pendingEmail;
+        return $this->verificationToken;
     }
 
-    public function setPendingEmail(?string $pendingEmail): static
+    public function setVerificationToken(?string $verificationToken): static
     {
-        $this->pendingEmail = $pendingEmail;
+        $this->verificationToken = $verificationToken;
 
         return $this;
     }

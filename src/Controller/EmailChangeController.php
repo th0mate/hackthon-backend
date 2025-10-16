@@ -41,7 +41,7 @@ class EmailChangeController extends AbstractController
 
         $existingUser = $utilisateurRepository->findOneBy(['adresseMail' => $newEmail]);
         if ($existingUser) {
-            return new JsonResponse(['message' => 'This email address is already in use.'], JsonResponse::HTTP_CONFLICT);
+            return new JsonResponse(['message' => 'Cet adresse email est déjà utilisé.'], JsonResponse::HTTP_CONFLICT);
         }
 
         // Generate a unique token
@@ -122,6 +122,6 @@ class EmailChangeController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new RedirectResponse('http://localhost:5173/dashboard?email_changed=true');
+        return new RedirectResponse('http://localhost:5173/login');
     }
 }
