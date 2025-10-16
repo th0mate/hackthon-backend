@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_ADRESSE_MAIL', fields: ['adresseMail'])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']],
+)]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -22,7 +27,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $adresseMail = null;
 
     /**
@@ -38,19 +43,22 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?\DateTime $dateAnniversaire = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nonce = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $pendingEmail = null;
 
     /**
      * @var Collection<int, Carte>
@@ -185,9 +193,21 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->nonce;
     }
 
-    public function setNonce(string $nonce): static
+    public function setNonce(?string $nonce): static
     {
         $this->nonce = $nonce;
+
+        return $this;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): static
+    {
+        $this->pendingEmail = $pendingEmail;
 
         return $this;
     }
