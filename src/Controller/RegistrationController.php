@@ -47,7 +47,7 @@ class RegistrationController extends AbstractController
 
         return $this->json([
             'message' => 'User registered successfully',
-            'user' => $user, // Consider creating a User DTO to control exposed data
+            'user' => $user,
             'token' => $token,
         ]);
     }
