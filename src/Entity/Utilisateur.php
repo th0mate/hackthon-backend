@@ -83,6 +83,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read'])]
     private Collection $cartes;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Groups(['user:read'])]
+    private ?\DateTimeInterface $derniereConnexion = null;
+
+    #[ORM\Column(type: Types::INTEGER, options: ["default" => 0])]
+    #[Groups(['user:read'])]
+    private int $joursConsecutifs = 0;
+
     public function __construct()
     {
         $this->cartes = new ArrayCollection();
@@ -277,6 +285,30 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
                 $carte->setUtilisateur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDerniereConnexion(): ?\DateTimeInterface
+    {
+        return $this->derniereConnexion;
+    }
+
+    public function setDerniereConnexion(?\DateTimeInterface $derniereConnexion): static
+    {
+        $this->derniereConnexion = $derniereConnexion;
+
+        return $this;
+    }
+
+    public function getJoursConsecutifs(): int
+    {
+        return $this->joursConsecutifs;
+    }
+
+    public function setJoursConsecutifs(int $joursConsecutifs): static
+    {
+        $this->joursConsecutifs = $joursConsecutifs;
 
         return $this;
     }
