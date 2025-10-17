@@ -20,33 +20,32 @@ class RegistrationController extends AbstractController
 {
     #[Route('/api/auth/register', name: 'app_register', methods: ['POST'])]
     public function register(
-        Request $request,
+        Request                     $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager,
-        MailerInterface $mailer,
-        UrlGeneratorInterface $urlGenerator,
-        Environment $twig
-    ): JsonResponse {
+        EntityManagerInterface      $entityManager,
+        MailerInterface             $mailer,
+        UrlGeneratorInterface       $urlGenerator,
+        Environment                 $twig,
+        JWTTokenManagerInterface    $jwtManager
+    ): JsonResponse
+    {
         $data = json_decode($request->getContent(), true);
 
-        // Basic validation
         if (empty($data['email']) || empty($data['password']) || empty($data['firstName']) || empty($data['lastName']) || empty($data['birthDate'])) {
             return $this->json(['message' => 'Invalid data'], 400);
         }
 
-        // Password strength validation
         $password = $data['password'];
         if (
-            !preg_match('/[A-Z]/', $password) ||       // At least one uppercase letter
-            !preg_match('/[a-z]/', $password) ||       // At least one lowercase letter
-            !preg_match('/[0-9]/', $password) ||       // At least one digit
-            !preg_match('/[^a-zA-Z0-9]/', $password) || // At least one special character
-            strlen($password) < 8                     // Minimum length of 8 characters
+            !preg_match('/[A-Z]/', $password) ||
+            !preg_match('/[a-z]/', $password) ||
+            !preg_match('/[0-9]/', $password) ||
+            !preg_match('/[^a-zA-Z0-9]/', $password) ||
+            strlen($password) < 8
         ) {
             return $this->json(['message' => 'Le mot de passe doit comporter au moins 8 caractères et contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.'], 400);
         }
 
-        // Age validation (must be at least 12 years old)
         $birthDate = new \DateTime($data['birthDate']);
         $now = new \DateTime();
         $age = $now->diff($birthDate)->y;
@@ -54,7 +53,6 @@ class RegistrationController extends AbstractController
             return $this->json(['message' => 'You must be at least 12 years old to register.'], 400);
         }
 
-        // Check if a user with this email already exists
         $existingUser = $entityManager->getRepository(Utilisateur::class)->findOneBy(['adresseMail' => $data['email']]);
         if ($existingUser) {
             return $this->json(['message' => 'Cet adresse email est déjà utilisée.'], 409); // 409 Conflict
@@ -77,7 +75,6 @@ class RegistrationController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        // Send verification email
         $verificationLink = $this->generateUrl('app_verify_email', ['token' => $user->getVerificationToken()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
@@ -110,14 +107,12 @@ class RegistrationController extends AbstractController
             return $this->json(['message' => 'Invalid verification token.'], 400);
         }
 
-        // Mark user as verified and clear verification token
         $user->setVerified(true);
         $user->setVerificationToken(null);
 
         $entityManager->persist($user);
         $entityManager->flush();
 
-        // Redirect to a frontend page (e.g., login page with a success message)
         return new RedirectResponse('http://localhost:5173/login');
 
     }
