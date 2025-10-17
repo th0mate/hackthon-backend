@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     shortName: 'Mood',
     operations: [
         new \ApiPlatform\Metadata\GetCollection(),
-        new \ApiPlatform\Metadata\Post(name: 'create_mood', uriTemplate: '/moods', processor: App\State\CarteProcessor::class),
+        new \ApiPlatform\Metadata\Post(controller: 'App\\Controller\\CreateCarteAction', security: "is_granted('ROLE_USER')", write: false),
         new \ApiPlatform\Metadata\Get(security: "object.getUtilisateur() == user"),
         new \ApiPlatform\Metadata\Put(security: "object.getUtilisateur() == user"),
         new \ApiPlatform\Metadata\Delete(security: "object.getUtilisateur() == user"),
@@ -42,14 +42,6 @@ class Carte
     #[ORM\Column(length: 255)]
     #[Groups(['mood:read', 'mood:write'])]
     private ?string $mood = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['mood:read', 'mood:write'])]
-    private ?string $note = null;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    #[Groups(['mood:read', 'mood:write'])]
-    private ?int $intensity = null;
 
     #[ORM\ManyToOne(inversedBy: 'cartes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -103,30 +95,6 @@ class Carte
         return $this;
     }
 
-    public function getNote(): ?string
-    {
-        return $this->note;
-    }
-
-    public function setNote(?string $note): static
-    {
-        $this->note = $note;
-
-        return $this;
-    }
-
-    public function getIntensity(): ?int
-    {
-        return $this->intensity;
-    }
-
-    public function setIntensity(?int $intensity): static
-    {
-        $this->intensity = $intensity;
-
-        return $this;
-    }
-
     public function getUtilisateur(): ?Utilisateur
     {
         return $this->utilisateur;
@@ -175,4 +143,5 @@ class Carte
         return $this;
     }
 }
+
 

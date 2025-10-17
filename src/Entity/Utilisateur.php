@@ -80,6 +80,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Carte>
      */
     #[ORM\OneToMany(targetEntity: Carte::class, mappedBy: 'utilisateur', orphanRemoval: true)]
+    #[Groups(['user:read'])]
     private Collection $cartes;
 
     public function __construct()
