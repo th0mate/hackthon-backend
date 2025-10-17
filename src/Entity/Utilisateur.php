@@ -227,6 +227,30 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getNonce(): ?string
+    {
+        return $this->nonce;
+    }
+
+    public function setNonce(?string $nonce): static
+    {
+        $this->nonce = $nonce;
+
+        return $this;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): static
+    {
+        $this->pendingEmail = $pendingEmail;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Carte>
      */

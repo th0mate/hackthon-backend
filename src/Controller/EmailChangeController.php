@@ -17,14 +17,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class EmailChangeController extends AbstractController
 {
     #[Route('/user/request-email-change', name: 'app_request_email_change', methods: ['POST'])]
-    public function requestEmailChange(Request $request, MailerInterface $mailer, EntityManagerInterface $entityManager, \App\Repository\UtilisateurRepository $utilisateurRepository): JsonResponse
+    public function requestEmailChange(Request $request, MailerInterface $mailer, EntityManagerInterface $entityManager, \App\Repository\UtilisateurRepository $utilisateurRepository, \Twig\Environment $twig): JsonResponse
     {
         /** @var Utilisateur $securityUser */
         $securityUser = $this->getUser();
         if (!$securityUser instanceof UserInterface) {
             return new JsonResponse(['message' => 'User not authenticated'], JsonResponse::HTTP_UNAUTHORIZED);
         }
-        echo("finptit");
 
         // Fetch a managed instance of the user from the database to ensure changes are persisted.
         $user = $entityManager->getRepository(Utilisateur::class)->find($securityUser->getId());
@@ -53,39 +52,13 @@ class EmailChangeController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-
         $confirmationLink = $this->generateUrl('app_confirm_email_change', ['token' => $token], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL);
-
-        $emailBody = '<body style="font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f4f4f4;">'
-        . '    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-'
-        . '        <h1 style="color: #333; text-align: center; font-size: 24px;">Confirmez votre nouvelle adresse e-mail</h1>
-'
-        . '        <p style="color: #555; font-size: 16px; line-height: 1.6;">Bonjour,</p>
-'
-        . '        <p style="color: #555; font-size: 16px; line-height: 1.6;">Veuillez cliquer sur le bouton ci-dessous pour confirmer le changement de votre adresse e-mail pour votre compte MoodFlow+.</p>
-'
-        . '        <div style="text-align: center; margin: 30px 0;">
-'
-        . '            <a href="' . $confirmationLink . '" style="background-color: #8a2be2; color: #ffffff; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">Confirmer mon e-mail</a>
-'
-        . '        </div>
-'
-        . '        <p style="color: #555; font-size: 16px; line-height: 1.6;">Si vous n\'avez pas demandé ce changement, vous pouvez ignorer cet e-mail en toute sécurité.</p>
-'
-        . '        <hr style="border: none; border-top: 1px solid #eeeeee; margin: 20px 0;">
-'
-        . '        <p style="color: #888; font-size: 12px; text-align: center;">L\'équipe MoodFlow+</p>
-'
-        . '    </div>
-'
-        . '</body>';
 
         $email = (new Email())
             ->from('no-reply@moodflow.com')
             ->to($newEmail)
             ->subject('Confirmez votre nouvelle adresse e-mail')
-            ->html($emailBody);
+            ->html($twig->render('emails/change_email_confirmation.html.twig', ['confirmationLink' => $confirmationLink]));
 
         try {
             $mailer->send($email);
@@ -96,7 +69,6 @@ class EmailChangeController extends AbstractController
                 'error' => $e->getMessage()
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-
 
         return new JsonResponse(['message' => 'A confirmation email has been sent to your new email address. Please check your inbox.']);
     }
