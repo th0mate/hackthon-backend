@@ -32,7 +32,7 @@ class RegistrationController extends AbstractController
         $user->setNom($data['lastName']);
         $user->setPrenom($data['firstName']);
         $user->setDateAnniversaire(new \DateTime($data['birthDate']));
-        $user->setNonce(bin2hex(random_bytes(32))); // Add this line
+        $user->setNonce(bin2hex(random_bytes(32)));
 
         $hashedPassword = $passwordHasher->hashPassword(
             $user,

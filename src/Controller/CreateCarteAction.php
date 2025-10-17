@@ -7,6 +7,7 @@ use App\Entity\Carte;
 use App\Repository\CarteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -23,7 +24,7 @@ class CreateCarteAction extends AbstractController
     ) {
     }
 
-    public function __invoke(Request $request): Carte
+    public function __invoke(Request $request): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -48,7 +49,7 @@ class CreateCarteAction extends AbstractController
         $this->entityManager->persist($carte);
         $this->entityManager->flush();
 
-        return $carte;
+        return $this->json($carte, 201, [], ['groups' => ['mood:read']]);
     }
 
     private function handleMoodTimestamps(Carte $newCarte): void
