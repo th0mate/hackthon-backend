@@ -9,6 +9,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MoodController extends AbstractController
 {
+    #[Route('/api/moods', name: 'app_moods_all', methods: ['GET'])]
+    public function getAllMoods(CarteRepository $carteRepository): JsonResponse
+    {
+        $moods = $carteRepository->findAll();
+        return $this->json($moods);
+    }
+
     #[Route('/api/moods/{date}', name: 'app_mood_by_date', methods: ['GET'])]
     public function getMoodByDate(string $date, CarteRepository $carteRepository): JsonResponse
     {
